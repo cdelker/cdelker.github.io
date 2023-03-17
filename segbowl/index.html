@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+
+<link rel="stylesheet" type="text/css" href="style.css">
+
+<body>
+
+<div id="top">
+	<h2 id="top">Segmented Turning Designer</h2>
+</div>
+<div id="left">
+<button id="btnView" class="mnubtn">View</button>
+<div id="mnuView" style="display:none">
+	<div class="btngrp">
+		<p>Zoom <button id="zoomIn" class="hbutton">+</button>
+		<button id="zoomOut" class="hbutton">-</button>
+		<span id="zoomTxt">View: 8"</span></p>
+	</div>
+	<p><input type="checkbox" id="showsegs" checked><label for="showsegs"><span></span>Show Segments</label>
+	<p><input type="checkbox" id="showsegnum"><label for="showsegnum"><span></span>Show Segment Numbers</label>
+	<p><input type="checkbox" id="showratio"><label for="showratio"><span></span>Golden Ratio Guide</label>
+	<hr>
+</div>
+
+<button id="btnBowl" class="mnubtn">Bowl</button>
+<div id="mnuBowl" style="display:none">
+	<p>Wall thickness
+	<input type="range" id="inptThick" min="0" max="1" value=".25" step=".0625" style="width: 60%">
+	<span id="valThick">1/4"</span></p>
+	<p>Ring tolerance
+	<input type="range" id="inptPad" min="0" max=".5" value=".125" step=".0625" style="width: 60%">
+	<span id="valPad">1/8"</span></p>
+	<hr>
+</div>
+
+<button id="btnRing" class="mnubtn">Ring</button>
+<div id="mnuRing" style="display:none">
+	<p>Height: <span id="segHtxt">3/4"</span>
+	<span class="updnbtn"><button id="segHup" class="hbutton">+</button>
+	<button id="segHdn" class="hbutton">-</button>
+	</span>
+	<p><span id="segNtxt">Segments: 12</span>
+	<span class="updnbtn"><button id="segNup" class="hbutton">+</button>
+	<button id="segNdn" class="hbutton">-</button>
+	</span>
+	<p>Rotation: <input type="number" id="ringrot" value="0" style="width:25%">
+	<button id="btnTwist" class="hbutton">Twist...</button>
+	<hr>
+	<p><button id="btnCopy" class="hbutton">Copy Ring</button>
+	<button id="btnPaste" class="hbutton">Paste Ring</button>
+</div>
+
+<button id="btnSeg" class="mnubtn">Segment</button>
+<div id="mnuSeg" style="display:none">
+<p>Select Mode:
+	<div class="styled-select">
+	<select id="segselect">
+		<option value="single">Single</option>
+		<option value="all">All</option>
+		<option value="2">Every 2nd</option>
+		<option value="3">Every 3rd</option>
+		<option value="4">Every 4th</option>
+		<option value="5">Every 5th</option>
+		<option value="6">Every 6th</option>
+	</select></div>
+	<hr>
+	<p><span id="segLen">Size:</span>
+	<span class="updnbtn"><button id="segLreset" class="hbutton">Reset</button>
+	<button id="segLup" class="hbutton">+</button>
+	<button id="segLdn" class="hbutton">-</button>
+	<hr>
+	<p>Colors: 	<button id="btnPal" class="hbutton" style="float: right">Palette...</button>
+	<p><button class="clrbtn" style="background-color: #E2CAA0;"></button>
+	<button class="clrbtn" style="background-color: #AD743F;"></button>
+	<button class="clrbtn" style="background-color: #995018;"></button>
+	<button class="clrbtn" style="background-color: #7B4F34;"></button>
+	<button class="clrbtn" style="background-color: #623329;"></button>
+	<button class="clrbtn" style="background-color: #44252B;"></button>
+	<hr>
+</div>
+
+<button id="btnOptions" class="mnubtn">Options</button>
+<div id="mnuOptions" style="display:none">
+	<p><input type="checkbox" id="redrawdrag" checked><label for="redrawdrag"><span></span>Redraw while dragging</label>
+	<p>Units:
+	<input type="radio" name="unit" id="inch" value="inch" checked><label for="inch"><span></span>Inch</label>
+	<input type="radio" name="unit" id="mm" value="mm"><label for="mm"><span></span>mm</label></p>
+	<span id="rptprec">
+	<p>Precision:
+	<div class="styled-select">
+	<select id="rptfmt">
+		<option value="decimal">Decimal</option>
+		<option value="16">16ths</option>
+		<option value="32">32nds</option>
+		<option value="64">64ths</option>
+	</select></div>
+	<p><button id="about" class="hbutton">Help/About</button>
+	<hr>
+</div>
+
+<p><button id="gentable" class="hbutton">Report</button>
+</div>
+
+<div id="main">	
+	<div id="viewbuttons">
+	<input type="checkbox" id="viewProf" checked>
+    <label for="viewProf"><span></span>Profile&nbsp;&nbsp;</label>
+	<input type="checkbox" id="viewRing" checked/>
+	<label for="viewRing"><span></span>Ring&nbsp;&nbsp;</label>
+	<input type="checkbox" id="view3D" checked>
+	<label for="view3D"><span></span>3D&nbsp;&nbsp;</label>
+	</div>
+
+	<div id="canvasviews">
+		<canvas id="canvas" height="500" width="500" class="2D">HTML5 Canvas Not Supported!</canvas>
+		<canvas id="canvas2" height="500" width="500" class="2D">HTML5 Canvas Not Supported!</canvas>
+		<canvas id="canvas3d" height="500" width="500" class="3D">WebGL Not Supported!</canvas>
+	</div>
+<p><span id="report"></span></p>
+</div>
+
+<!-- Palette Dialog -->
+<div id="palettewindow" class="modal">
+  <div class="modal-content">
+	<span class="close">&times;</span>
+
+	<p>Drag colors to the palette...</p>
+	<div class="styled-select">
+	<select id="colortype">
+		<option value="wood">Wood Colors</option>
+		<option value="bright">Bright Colors</option>
+	</select></div>
+	<div id="colorselect"><!-- Color buttons will be filled in here --></div>
+  </div>
+</div>
+
+<!-- About Dialog -->
+<div id="aboutwindow" class="modal">
+	<div class="modal-content">
+		<span class="close">&times;</span>
+		<h3>Collin's Segmented Turning Designer</h3>
+		
+		<p>Instructions:
+		<ol><li>Adjust the bowl profile by dragging the blue circles around. Double-click
+		on the line to add additional control points. If dragging is slow to respond,
+		turn off the "Redraw while dragging" option, this will allow smoother operation
+		on slower computer hardware.</li>
+		<li>Click on a ring cross section red box and use the Ring menu to adjust the
+		thickness and number of segments in that ring.</li>
+		<li>Click on individual segments in the ring view and use the Segment menu
+		to adjust their color and individual size. Change the Select Mode option
+		to help select and adjust multiple segments at one time. When a segment size is changed,
+		the size of the remaining segments is automatically adjusted to fill the circle.</li>
+		<li>Press the Report button to show a summary page with parameters for each ring.
+		This page can be saved or printed.</li>
+		</ol>
+		
+		<hr>
+		<p>Copyright 2017, Collin J. Delker<br><span id="version"></span>		
+		<p>This website is provided free for any use, released under the MIT License.
+		However, if you actually converted your virtual bowl into a real bowl, 
+		please send me a pic! Comments, suggestions, or pictures email to <span id="contact"></span>. 
+		
+		<p><a href="http://www.bitbucket.org/cdelker/segbowl">Source Code</a> is available on BitBucket. 
+		It may be downloaded and used offline, no servers necessary, or run online at
+		<a href="https://cdelker.bitbucket.io/segbowl">https://cdelker.bitbucket.io/segbowl</a>.
+	</div>
+</div>
+
+<canvas id="backcanvas" height="500" width="500" style="display: none"></canvas>
+<script src="js/three.min.js"></script>
+<script src="js/OrbitControls.js"></script>
+<script type="text/javascript" src="js/bowl.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-7368764-4"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-7368764-4');
+</script>
+
+</body>
+</html>

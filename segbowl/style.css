@@ -1,0 +1,227 @@
+body {
+    font-family: verdana;
+    font-size: 12px;
+    background-color: #444444;
+    color: #CCCCCC;
+}
+
+a:link{color: #AAAAAA;}
+a:active{color: #06C;}
+a:visited{color: #888888;}
+
+h1, h2 {
+    color: #EEEEEE;
+    font-size: 22px;
+    text-align: center;
+    page-break-before:always;
+}
+
+h3 {
+    page-break-before:always;
+}
+
+h3:first-of-type {
+    page-break-before: avoid;
+}
+
+p {
+    font-size: 12px;
+}
+
+table, th, td {
+    font-size: 12px;
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 5px 10px;
+}
+
+input[type=number] { 
+    width: 80%;
+    background-color: #444444;
+    color: #CCCCCC;
+    border: 1px solid #CCCCCC;
+    border-radius: 4px;
+}
+select {
+    width: 80%;
+    padding: 16px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #f1f1f1;
+}
+
+#left {
+    float: left;
+    width: 15%;
+    min-width: 150px;
+/*  border: 1px solid #CCCCCC; */
+}
+
+#main {
+    float: right;
+    margin-left: 0px;
+}
+
+.updnbtn {
+    display: inline-block;
+    float: right;
+}
+
+.mnubtn {
+    width: 100%;
+    background-color: #444444;
+    color: #CCCCCC;
+    border: 1px solid black;
+    padding: 2px 2px;
+}
+.mnubtn:hover {
+    background-color: #777777;
+}
+.mnubtn:active {
+    background-color: black;
+    color: white;
+}
+
+.hbutton {
+/*  width: 20px; */
+    min-width: 20px;
+    background-color: #DDDDDD;
+    border: 1px solid black;
+    color: black;
+    text-align: center;
+    outline: none;
+    display: block-inline;
+    padding: 2px 2px;
+}
+.hbutton:hover {
+    background-color: #999999;
+}
+.hbutton:active{
+    background-color: black;
+    color:white;
+}
+
+.clrbtn {
+    width: 25px;
+    height: 25px;
+    border: 2px solid black;
+}
+.clrbtn:hover {
+    border: 2px solid gray;
+}
+.clrbtn:active {
+    border: 2px solid lightgray;
+}
+
+.tmppal, .clrsel {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    border: 1px solid black;
+}
+.tmppal:hover, .clrsel:hover {
+    border: 1px solid gray;
+}
+
+.styled-select select {
+   background: transparent;
+      width: 120%;
+   padding: 4px;
+   font-size: 12px;
+   color: #CCCCCC;
+   -webkit-appearance: none;
+   }
+
+.styled-select {
+   width: 50%; 
+   height: 24px;
+   overflow: hidden;
+   background: url(downarrow.png) no-repeat right #515151;
+   -webkit-border-radius: 4px;
+   -moz-border-radius: 4px;
+   border-radius: 4px;
+   }
+   
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #444444;
+    margin: auto;
+    padding: 10px;
+    border: 1px solid #CCC;
+    width: 50%;
+}
+
+/* The Close Button */
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+input[type="checkbox"] {
+    display:none;
+}
+
+input[type="checkbox"] + label {
+    color:#CCCCCC;
+}
+
+input[type="checkbox"] + label span {
+    display:inline-block;
+    width:19px;
+    height:19px;
+    margin:-2px 10px 0 0;
+    vertical-align:middle;
+    background:url(check_radio_sheet.png) left top no-repeat;
+    cursor:pointer;
+}
+
+input[type="checkbox"]:checked + label span {
+    background:url(check_radio_sheet.png) -19px top no-repeat;
+}
+
+input[type="radio"] {
+    display:none;
+}
+
+input[type="radio"] + label {
+    color:#CCCCCC;
+    font-family:Arial, sans-serif;
+}
+
+input[type="radio"] + label span {
+    display:inline-block;
+    width:19px;
+    height:19px;
+    margin:-2px 10px 0 0;
+    vertical-align:middle;
+    background:url(check_radio_sheet.png) -38px top no-repeat;
+    cursor:pointer;
+}
+
+input[type="radio"]:checked + label span {
+    background:url(check_radio_sheet.png) -57px top no-repeat;
+}

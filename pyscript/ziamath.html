@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>Ziamath Latex Rendering Demo</title>
+
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script defer src="https://pyscript.net/releases/2023.03.1/pyscript.js"></script>
+
+  </head>
+
+  <body>
+    <py-config>
+      packages = ["whl/ziafont-0.4-py3-none-any.whl",
+                  "whl/ziamath-0.6-py3-none-any.whl",
+                  "latex2mathml"]
+      [[fetch]]
+      files = ["fonts/Asana-Math.ttf",
+               "fonts/Concrete-Math.otf",
+               "fonts/DejaVuMathTeXGyre.ttf",
+               "fonts/Erewhon-Math.otf",
+               "fonts/FiraMath-Regular.otf",
+               "fonts/Garamond-Math.otf",
+               "fonts/LibertinusMath-Regular.otf"]
+    </py-config>
+<section class="jumbotron text-center">
+    <div class="container">
+      <h1>Ziamath LaTeX Rendering Demo</h1>
+      <p class="lead text-muted">Enter a LaTeX math expression</p>
+    </div>
+</section>
+
+<div class="container">
+    <div class="form-row">
+        <div class="form-col col-md-8">
+          <label for="expression">LaTeX Expression:</label>
+          <input type="text" py-input="drawit()" class="form-control" id="expression" name="expression" value="\sqrt{a^2 + b^2}">
+        </div>
+      <div class="form-col col-md-2">
+        <label for="mathfont">Font:</label>
+          <select class="form-control" id="mathfont" name="mathfont" py-input="drawit()">
+            <option value="stix2">Stix2</option>
+            <option value="asana">Asana-Math</option>
+            <option value="concrete">Concrete-Math</option>
+            <option value="dejavu">DejaVu Math Tex Gyre</option>
+            <option value="erewhon">Erewhon-Math</option>
+            <option value="fira">FiraMath</option>
+            <option value="garamond">Garamond-Math</option>
+            <option value="liber">LibertinusMath</option>
+          </select>          
+      </div>
+    </div>
+      <br><br>
+      <div id="mathout"></div>
+      <br><br>    
+   <div class="row">
+      <div class="form-col col-md-6">
+        <button type="button" py-onClick="file_save()" id="savebutton" class="btn-sm btn-primary">Download SVG</button>
+       </div>
+   </div>
+
+</div>
+      <br><br>    
+<footer>
+   <div class="copyright text-center">
+       <p><a href="ziamathmml.html">MathML Version</a></p>
+       <p class="text-sm">Made with <a href="https://ziamath.readthedocs.io">Ziamath</a> and <a href="https://pyscript.net/">PyScript</a></p>
+   </div>
+</footer>
+
+<py-script>
+import asyncio
+from js import document, Object, window, console
+from pyodide.ffi import to_js, create_proxy
+
+import ziamath
+
+def getfont():
+    name = Element("mathfont").value
+    return {'asana': 'fonts/Asana-Math.ttf',
+            'concrete': 'fonts/Concrete-Math.otf',
+            'dejavu': 'fonts/DejaVuMathTeXGyre.ttf',
+            'erewhon': 'fonts/Erewhon-Math.otf',
+            'fira': 'fonts/FiraMath-Regular.otf',
+            'garamond': 'fonts/Garamond-Math.otf',
+            'liber': 'fonts/LibertinusMath-Regular.otf'
+            }.get(name, None)  # stix is default/None
+
+async def drawit():
+    expr = Element("expression").value
+    try:
+        mathsvg = ziamath.Math.fromlatex(expr, font=getfont())
+    except Exception as e:
+        console.log('Math Exception: ' + str(e.args))
+    else:
+        #Element('mathout').write(mathsvg)
+        display(mathsvg, target='mathout', append=False)
+
+
+async def file_save():
+    try:
+        options = {"startIn": "downloads", "suggestedName": "math.svg"}
+        fileHandle = await window.showSaveFilePicker(Object.fromEntries(to_js(options)))
+    except Exception as e:
+        console.log('Exception: ' + str(e.args))
+        return
+
+    expr = Element("expression").value
+    mathsvg = ziamath.Math.fromlatex(expr, font=getfont()).svg()
+    file = await fileHandle.createWritable()
+    await file.write(mathsvg)
+    await file.close()
+    return
+
+drawit()
+    
+</py-script>
+</body>
+</html>
