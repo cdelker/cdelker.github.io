@@ -3,56 +3,44 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-
     <title>Ziafont String Rendering Demo</title>
-
     <link rel="icon" type="image/png" href="favicon.png" />
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style/style.css" />
     <script defer src="https://pyscript.net/releases/2023.03.1/pyscript.js"></script>
-
   </head>
 
   <body>
     <py-config>
-        packages = ["whl/ziafont-0.4-py3-none-any.whl"]
+        packages = ["whl/ziafont-0.6a0-py3-none-any.whl"]
       </py-config>
-<section class="jumbotron text-center">
-    <div class="container">
-      <h1>Ziafont String Rendering Demo</h1>
-      <p class="lead text-muted">Type some text...</p>
-    </div>
-</section>
+<div class="top">
+  <h1>Ziafont String Rendering Demo</h1>
+  <h3>Type some text...</h3>
+</div>
 
-<div class="container">
-    <div class="form-row">
-        <div class="form-col col-md-8">
-            <input type="text" py-input="drawit()" class="form-control" id="expression" name="expression" value="Hello world!">
-        </div>
-      <div class="form-col col-md-2">
-        <button type="button" py-onClick="load_font()" id="loadbutton" class="btn-sm btn-primary">Load Font</button>
-       </div>
+<div class="content">
+<div class="inputgrid">
+    <div class="grid-box">
+        <input type="text" py-input="drawit()" id="expression" name="expression" value="Hello world!">
     </div>
-      <br><br>
-    <div class="row">
-        <div class="col">
-      <div id="textout"></div>
-        </div>
+    <div class="grid-box">
+        <button type="button" py-onClick="load_font()" id="loadbutton">Load Font</button>
     </div>
-      <br><br>    
-   <div class="row">
-      <div class="form-col col-md-6">
-        <button type="button" py-onClick="file_save()" id="savebutton" class="btn-sm btn-primary">Download SVG</button>
-       </div>
-   </div>
+</div>
+<br><br>
+<div id="textout"></div>
+<br><br>    
+
+<div>
+  <button type="button" py-onClick="file_save()" id="savebutton">Download SVG</button>
+</div>
 
 </div>
       <br><br>    
 <footer>
-   <div class="copyright text-center">
-       <p><a href="ziafont.html">Glyph Inspection Version</a></p>
-       <p class="text-sm">Made with <a href="https://ziafont.readthedocs.io">Ziafont</a> and <a href="https://pyscript.net/">PyScript</a></p>
-   </div>
+   <p><a href="ziafont.html">Glyph Inspection Version</a></p>
+   <p>Made with <a href="https://ziafont.readthedocs.io">Ziafont</a> and <a href="https://pyscript.net/">PyScript</a></p>
 </footer>
 
 <py-script>

@@ -3,20 +3,17 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-
     <title>Ziamath Latex Rendering Demo</title>
-
     <link rel="icon" type="image/png" href="favicon.png" />
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style/style.css" />
     <script defer src="https://pyscript.net/releases/2023.03.1/pyscript.js"></script>
-
   </head>
 
   <body>
     <py-config>
-      packages = ["whl/ziafont-0.4-py3-none-any.whl",
-                  "whl/ziamath-0.6-py3-none-any.whl",
+      packages = ["whl/ziafont-0.6a0-py3-none-any.whl",
+                  "whl/ziamath-0.8a0-py3-none-any.whl",
                   "latex2mathml"]
       [[fetch]]
       files = ["fonts/Asana-Math.ttf",
@@ -27,55 +24,58 @@
                "fonts/Garamond-Math.otf",
                "fonts/LibertinusMath-Regular.otf"]
     </py-config>
-<section class="jumbotron text-center">
-    <div class="container">
-      <h1>Ziamath LaTeX Rendering Demo</h1>
-      <p class="lead text-muted">Enter a LaTeX math expression</p>
-    </div>
-</section>
+<div class="top">
+  <h1>Ziamath LaTeX Rendering Demo</h1>
+  <h3>Enter a LaTeX math expression</h3>
+</div>
 
-<div class="container">
-    <div class="form-row">
-        <div class="form-col col-md-8">
-          <label for="expression">LaTeX Expression:</label>
-          <input type="text" py-input="drawit()" class="form-control" id="expression" name="expression" value="\sqrt{a^2 + b^2}">
-        </div>
-      <div class="form-col col-md-2">
-        <label for="mathfont">Font:</label>
-          <select class="form-control" id="mathfont" name="mathfont" py-input="drawit()">
-            <option value="stix2">Stix2</option>
-            <option value="asana">Asana-Math</option>
-            <option value="concrete">Concrete-Math</option>
-            <option value="dejavu">DejaVu Math Tex Gyre</option>
-            <option value="erewhon">Erewhon-Math</option>
-            <option value="fira">FiraMath</option>
-            <option value="garamond">Garamond-Math</option>
-            <option value="liber">LibertinusMath</option>
-          </select>          
-      </div>
+<div class="content">
+<div class="inputgrid">
+    <div class="grid-box">
+      <label for="expression">LaTeX Expression:</label>
     </div>
+    <div class="grid-box">
+      <label for="mathfont">Font:</label>
+    </div>
+    <div class="grid-box"></div>
+    <div class="grid-box">
+      <input type="text" py-input="drawit()" id="expression" name="expression" value="\sqrt{a^2 + b^2}">
+    </div>
+    <div class="grid-box">
+      <select id="mathfont" name="mathfont" py-input="drawit()">
+        <option value="stix2">Stix2</option>
+        <option value="asana">Asana-Math</option>
+        <option value="concrete">Concrete-Math</option>
+        <option value="dejavu">DejaVu Math Tex Gyre</option>
+        <option value="erewhon">Erewhon-Math</option>
+        <option value="fira">FiraMath</option>
+        <option value="garamond">Garamond-Math</option>
+        <option value="liber">LibertinusMath</option>
+      </select>          
+    </div>
+    <div class="grid-box">
+          <input type="checkbox" name="inline" id="inline" type="checkbox" py-click="drawit()">
+          <label>Inline</label>
+    </div>
+</div>
+    
       <br><br>
       <div id="mathout"></div>
       <br><br>    
-   <div class="row">
-      <div class="form-col col-md-6">
-        <button type="button" py-onClick="file_save()" id="savebutton" class="btn-sm btn-primary">Download SVG</button>
-       </div>
+   <div>
+      <button type="button" py-onClick="file_save()" id="savebutton">Download SVG</button>
    </div>
-
-</div>
+      </div>
       <br><br>    
 <footer>
-   <div class="copyright text-center">
        <p><a href="ziamathmml.html">MathML Version</a></p>
-       <p class="text-sm">Made with <a href="https://ziamath.readthedocs.io">Ziamath</a> and <a href="https://pyscript.net/">PyScript</a></p>
-   </div>
+       <p>Made with <a href="https://ziamath.readthedocs.io">Ziamath</a> and <a href="https://pyscript.net/">PyScript</a></p>
 </footer>
 
 <py-script>
 import asyncio
-from js import document, Object, window, console
-from pyodide.ffi import to_js, create_proxy
+from js import Object, window, console
+from pyodide.ffi import to_js
 
 import ziamath
 
@@ -92,12 +92,12 @@ def getfont():
 
 async def drawit():
     expr = Element("expression").value
+    inline = Element("inline").element.checked
     try:
-        mathsvg = ziamath.Math.fromlatex(expr, font=getfont())
+        mathsvg = ziamath.Latex(expr, font=getfont(), inline=inline)
     except Exception as e:
         console.log('Math Exception: ' + str(e.args))
     else:
-        #Element('mathout').write(mathsvg)
         display(mathsvg, target='mathout', append=False)
 
 
@@ -110,7 +110,8 @@ async def file_save():
         return
 
     expr = Element("expression").value
-    mathsvg = ziamath.Math.fromlatex(expr, font=getfont()).svg()
+    inline = Element("inline").element.checked
+    mathsvg = ziamath.Latex(expr, font=getfont(), inline=inline).svg()
     file = await fileHandle.createWritable()
     await file.write(mathsvg)
     await file.close()

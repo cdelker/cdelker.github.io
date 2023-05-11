@@ -1,0 +1,133 @@
+body {
+      font-family: Helvetica, sans-serif;
+      color: #333;
+      margin: auto;
+}
+
+h1 {
+   font-size: 36px;
+}
+
+h3 {
+    font-size: 18px;
+    font-weight: lighter;
+    color: #777
+}
+
+p {
+    font-size: 14px;
+}
+
+a {
+    color: #448;
+}
+
+a:visited {
+    color: #226;
+}
+
+.top {
+  max-width: 100%;
+  text-align: center;
+  background: #e3e3eb;
+  padding-top: 2em;
+  padding-bottom: 1em;
+  margin-bottom: 1em;
+}
+
+footer {
+  max-width: 100%;
+  text-align: center;
+  background: #e3e3eb;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.content {
+  max-width: 56em;
+  margin: auto;
+}
+
+.inputgrid {
+    display: grid;
+    grid-template-columns: 4fr 2fr 1fr;
+    grid-column-gap: 5px;
+    grid-row-gap: 5px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+input[type=text], input[type=number], textarea{
+    flex-grow: 1;
+    box-sizing:border-box;
+    width: calc(100% - 5px);
+    margin-left: 5px;
+    padding: 6px 12px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+select {
+    flex-grow: 1;
+    box-sizing:border-box;
+    width: calc(100% - 5px);
+    margin-left: 5px;
+    padding: 8px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 4px; 
+}
+
+
+button {
+    display: inline-block;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 16px;
+    padding: 2px 16px;
+    height: 32px;
+    min-width: 60px;
+    min-height: 32px;
+    border: none;
+    color: #fff;
+    background-color: rgb(88, 101, 242);
+    transition: background-color .17s ease,color .17s ease;
+}
+button:hover {
+    background-color: rgb(71, 82, 196);
+}
+
+input[type=checkbox] {
+    margin-left: 10px;
+    margin-top: 10px;
+    width: 15px;
+    height: 15px;
+}
+
+
+
+.logicgrid {
+    display: grid;
+    grid-template-columns: 4fr 1fr;
+    grid-column-gap: 5px;
+    grid-row-gap: 5px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+#mathout {
+    margin: 20px;
+}
+#expression {
+    width: 500px;
+}
+#outlabel {
+    width: 40px;
+}
