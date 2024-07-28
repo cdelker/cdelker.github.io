@@ -57,6 +57,15 @@ footer {
     margin-right: 10px;
 }
 
+.outputgrid {
+    display: grid;
+    grid-template-columns: 4fr 2fr;
+    grid-column-gap: 5px;
+    grid-row-gap: 5px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
 input[type=text], input[type=number], textarea{
     flex-grow: 1;
     box-sizing:border-box;
@@ -112,7 +121,30 @@ input[type=checkbox] {
     height: 15px;
 }
 
-
+input[type=file] {
+    width: 320px;
+    height: 50px;
+    max-width: 100%;
+    color: #444;
+    background-color: #fff;
+    border: 1px solid #555;
+    border-radius: 5px;
+}
+input[type=file]::file-selector-button {
+    margin-right: 20px;
+    margin-left: 5px;
+    margin-top: 8px;
+    border: none;
+    background: rgb(88, 101, 242);
+    padding: 10px 20px;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color .2s ease-in-out;
+  }
+  input[type=file]::file-selector-button:hover {
+    background: rgb(71, 82, 196);
+  }
 
 .logicgrid {
     display: grid;

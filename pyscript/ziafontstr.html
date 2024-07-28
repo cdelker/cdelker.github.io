@@ -5,15 +5,23 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Ziafont String Rendering Demo</title>
     <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <link rel="stylesheet" href="style/style.css" />
-    <script defer src="https://pyscript.net/releases/2023.03.1/pyscript.js"></script>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.7.1/core.css" />
+    <script type="module" src="https://pyscript.net/releases/2024.7.1/core.js"></script>
+    <script type="module">
+        const loading = document.getElementById('loading');
+        addEventListener('py:ready', () => loading.close());
+        loading.showModal();
+    </script>
   </head>
 
   <body>
     <py-config>
-        packages = ["whl/ziafont-0.6-py3-none-any.whl"]
+        packages = ["whl/ziafont-0.9-py3-none-any.whl"]
       </py-config>
+<dialog id="loading">
+    <h2>Loading...</h2>
+</dialog>
 <div class="top">
   <h1>Ziafont String Rendering Demo</h1>
   <h3>Type some text...</h3>
@@ -22,10 +30,10 @@
 <div class="content">
 <div class="inputgrid">
     <div class="grid-box">
-        <input type="text" py-input="drawit()" id="expression" name="expression" value="Hello world!">
+        <input type="text" py-input="drawit" id="expression" name="expression" value="Hello world!">
     </div>
     <div class="grid-box">
-        <button type="button" py-onClick="load_font()" id="loadbutton">Load Font</button>
+        <button type="button" py-click="load_font" id="loadbutton">Load Font</button>
     </div>
 </div>
 <br><br>
@@ -33,7 +41,7 @@
 <br><br>    
 
 <div>
-  <button type="button" py-onClick="file_save()" id="savebutton">Download SVG</button>
+  <button type="button" py-click="file_save" id="savebutton">Download SVG</button>
 </div>
 
 </div>
@@ -45,55 +53,64 @@
 
 <py-script>
 import asyncio
-from js import document, Object, window, console
-from pyodide.ffi import to_js, create_proxy
+from pyscript import document, display
+from js import console, window, Uint8Array, File, URL
+from io import BytesIO
 
 import ziafont
 
-font = ziafont.Font()
 
-async def load_font():
-    global font
-    try:
-        fileHandles = await window.showOpenFilePicker();
-    except Exception as e:
-        console.log('Exception: ' + str(e))
-        return
-    else:
-        file = await fileHandles[0].getFile()
-        buf = file.arrayBuffer()
-        await asyncio.sleep(.5)
-        b = buf.result().to_bytes()
-        with open('myfont.otf', 'wb') as f:
-            f.write(b)
-        font = ziafont.Font('myfont.otf')
-        await drawit()
+class MyFont:
+    ''' Class for accessing loaded font globally '''
+    def __init__(self):
+        self.font = ziafont.Font()
 
-async def drawit():
-    console.log('DRAWIT')
-    expr = Element("expression").value
-    if len(expr) == 0: return
+    def change_font(self, fname):
+        self.font = ziafont.Font(fname)
+
+
+myfont = MyFont()
+
+
+async def load_font(event=None):
+    ''' Load the font file '''
+    files = event.target.files.to_py()
+    file = files.item(0)
+    if file is None: return
+    filename = file.name
+    content = Uint8Array.new(await file.arrayBuffer())
+    buf = BytesIO(bytearray(content))
+    with open(filename, 'wb') as f:
+        f.write(buf.getbuffer())
+
+    myfont.change_font(filename)
+    console.log(f'Loaded font {filename}')
+    drawit()
+
+
+def drawit(*args):
+    expr = document.querySelector("#expression").value
     try:
-        text = font.text(expr)
+        text = myfont.font.text(expr)
     except Exception as e:
         console.log('Exception: ' + str(e.args))
     else:
         display(text, target='textout', append=False)
-    
-async def file_save():
-    try:
-        options = {"startIn": "downloads", "suggestedName": "math.svg"}
-        fileHandle = await window.showSaveFilePicker(Object.fromEntries(to_js(options)))
-    except Exception as e:
-        console.log('Exception: ' + str(e.args))
-        return
 
-    expr = Element("expression").value
-    textsvg = font.text(expr).svg()
-    file = await fileHandle.createWritable()
-    await file.write(textsvg)
-    await file.close()
-    return
+
+async def file_save(*args):
+    expr = document.querySelector("#expression").value
+    textsvg = myfont.font.text(expr).svg()
+    stream = BytesIO(textsvg.encode('utf-8'))
+    js_array = Uint8Array.new(len(textsvg))
+    js_array.assign(stream.getbuffer())
+    file = File.new([js_array], "ziafont_texxt.svg", {type: "text/plain"})
+    url = URL.createObjectURL(file)
+
+    hidden_link = document.createElement("a")
+    hidden_link.setAttribute("download", "ziafont_text.svg")
+    hidden_link.setAttribute("href", url)
+    hidden_link.click()
 
 drawit()
     

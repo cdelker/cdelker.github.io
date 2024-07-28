@@ -5,15 +5,26 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Logic Circuits</title>
     <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <link rel="stylesheet" href="style/style.css" />
-    <script defer src="https://pyscript.net/releases/2023.03.1/pyscript.js"></script>
-  </head>
-
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.7.1/core.css" />
+    <script type="module" src="https://pyscript.net/releases/2024.7.1/core.js"></script>
+    <script type="module">
+      const loading = document.getElementById('loading');
+      addEventListener('py:ready', () => loading.close());
+      loading.showModal();
+  </script>
+</head>
   <body>
     <py-config>
-      packages = ["whl/schemdraw-0.17-py3-none-any.whl"]
-    </py-config>      
+      packages = ["whl/schemdraw-0.19-py3-none-any.whl",
+                  "whl/ziamath-0.10-py3-none-any.whl",
+                  "whl/ziafont-0.9-py3-none-any.whl",
+                  "pyparsing"
+                  ]
+    </py-config>
+<dialog id="loading">
+  <h2>Loading...</h2>
+</dialog>
 <div class="top">
   <h1>Logic Gates by Schemdraw</h1>
   <h3>Enter a logic expression</h3>
@@ -28,11 +39,11 @@
         Gate Height
     </div>
     <div class="grid-box">
-      <input type="text" py-input="drawit()" id="expression" name="expression" value="a or b"> = 
-      <input type="text" py-input="drawit()" id="outlabel" name="outlabel" value="Q">
+      <input type="text" py-input="drawit" id="expression" name="expression" value="a or b"> = 
+      <input type="text" py-input="drawit" id="outlabel" name="outlabel" value="Q">
     </div>
     <div class="grid-box">
-      <input type="number" py-input="drawit()" name="height" id="height"
+      <input type="number" py-input="drawit" name="height" id="height"
             min=".25" max="4" step=".25" value=".75">
     </div>
 </div>
@@ -42,7 +53,7 @@
 <br><br>
 
 <div>
-    <button type="button" py-onClick="file_save()" id="savebutton">Download Image</button>
+    <button type="button" py-click="file_save" id="savebutton">Download Image</button>
 </div>
 </div>
   <br><br>    
@@ -52,32 +63,37 @@
 
 <py-script>
 import asyncio
-from js import document, Object, window, console
-from pyodide.ffi import to_js, create_proxy
+from pyscript import document, display
+from js import console, window, Uint8Array, File, URL
+from io import BytesIO
 
 from schemdraw.parsing import logicparse
 
-async def drawit():
-    expr = Element("expression").value
-    outlabel = Element("outlabel").value
-    gateH = float(Element("height").value)
+
+def drawit(*args):
+    expr = document.querySelector("#expression").value
+    outlabel = document.querySelector("#outlabel").value
+    gateH = float(document.querySelector("#height").value)
     d = logicparse(expr, outlabel=outlabel, gateH=gateH)
     display(d, target='schematic', append=False)
 
-async def file_save():
-    try:
-        options = {"startIn": "downloads", "suggestedName": "logic.svg"}
-        fileHandle = await window.showSaveFilePicker(Object.fromEntries(to_js(options)))
-    except Exception as e:
-        console.log('Exception: ' + str(e.args))
-        return
 
-    expr = Element("expression").value
-    d = logicparse(expr)
-    file = await fileHandle.createWritable()
-    await file.write(d.get_imagedata().decode('utf-8'))
-    await file.close()
-    return
+async def file_save(*args):
+    expr = document.querySelector("#expression").value
+    outlabel = document.querySelector("#outlabel").value
+    gateH = float(document.querySelector("#height").value)
+    img = logicparse(expr, outlabel=outlabel, gateH=gateH).get_imagedata()
+
+    stream = BytesIO(img)
+    js_array = Uint8Array.new(len(img))
+    js_array.assign(stream.getbuffer())
+    file = File.new([js_array], "schemdraw_logic.svg", {type: "text/plain"})
+    url = URL.createObjectURL(file)
+
+    hidden_link = document.createElement("a")
+    hidden_link.setAttribute("download", "schemdraw_logic.svg")
+    hidden_link.setAttribute("href", url)
+    hidden_link.click()
 
 
 drawit()
