@@ -1,0 +1,183 @@
+html,
+body {
+    font-family: Helvetica, sans-serif;
+    color: #333;
+    margin: auto;
+}
+
+h1 {
+    font-size: 36px;
+}
+
+h3 {
+    font-size: 18px;
+    font-weight: lighter;
+    color: #777
+}
+
+p {
+    font-size: 14px;
+}
+
+a {
+    color: #448;
+}
+
+a:visited {
+    color: #226;
+}
+
+.top {
+    max-width: 100%;
+    text-align: center;
+    background: #e3e3eb;
+    margin-bottom: 1em;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.content {
+    max-width: 56em;
+    margin: auto;
+    text-align: center;
+}
+
+footer {
+    max-width: 100%;
+    text-align: center;
+    background: #e3e3eb;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+input[type=file] {
+    width: 320px;
+    height: 50px;
+    max-width: 100%;
+    color: #444;
+    background-color: #fff;
+    border: 1px solid #555;
+    border-radius: 5px;
+    margin-left: 10px;
+}
+
+input[type=file]::file-selector-button {
+    margin-right: 20px;
+    margin-left: 8px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    border: none;
+    background: rgb(88, 101, 242);
+    padding: 10px 20px;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color .2s ease-in-out;
+}
+
+input[type=file]::file-selector-button:hover {
+    background: rgb(71, 82, 196);
+}
+
+input[type=text],
+input[type=number],
+textarea {
+    flex-grow: 1;
+    box-sizing: border-box;
+    width: 50px;
+    margin-left: 5px;
+    padding: 6px 12px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+input[type=number] {
+    width: 100px;
+}
+
+select {
+    flex-grow: 1;
+    box-sizing: border-box;
+    width: 120px;
+    margin-left: 5px;
+    padding: 6px 12px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+.pyout {
+    margin: 20px;
+}
+
+.glyphgrid {
+    display: grid;
+    margin-top: 25px;
+    grid-template-columns: 2fr 1fr;
+    grid-column-gap: 0px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.datatable table {
+    border-radius: 4px;
+    border-spacing: 0;
+}
+
+.datatable td {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 1em;
+    padding-right: 1em;
+    border: 1px solid #eee;
+}
+
+.datatable tr:nth-of-type(odd) {
+    background-color: #f8f8f8;
+}
+
+
+#out_allglyphs td {
+    cursor: pointer;
+    text-align: center;
+    background-color: none;
+}
+
+#out_allglyphs td:hover {
+    background-color: #DDD;
+}
+
+#out_allglyphs,
+#out_fontinfo {
+    overflow-y: scroll;
+    height: 500px;
+}
+
+#out_gsub {
+    text-align: center;
+    overflow-y: scroll;
+    height: 500px;
+}
+
+#out_gsub tr th {
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+#out_gsub tr:nth-of-type(odd) {
+    background-color: #f8f8f8;
+}

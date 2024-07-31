@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Ziafont Glyph Inspection Demo</title>
     <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="stylesheet" href="style/style.css" />
+    <link rel="stylesheet" href="style/zfstyle.css" />
+    <link rel="stylesheet" href="style/tabs.css" />
     <link rel="stylesheet" href="https://pyscript.net/releases/2024.7.1/core.css" />
     <script type="module" src="https://pyscript.net/releases/2024.7.1/core.js"></script>
     <script type="module">
@@ -15,120 +16,182 @@
     </script>
     </head>
 
-  <body>
-    <py-config>
-      packages = ["whl/ziafont-0.9-py3-none-any.whl"]
-    </py-config>
-
+<body>
+<py-config>
+    packages = ["whl/ziafont-0.9-py3-none-any.whl"]
+</py-config>
 <dialog id="loading">
-  <h2>Loading...</h2>
+    <h2>Loading...</h2>
 </dialog>
+
+
 <div class="top">
-  <h1>Ziafont Glyph Inspection Demo</h1>
-  <h3>Type a character...</h3>
+  <h1>Ziafont Font Inspection Demo</h1>
+  <div class="grid-box">
+    <label for="fileinput">Font File</label>
+    <input type="file" id="fileinput" accept=".ttf, .otf" py-change="load_font"/>
+  </div>
 </div>
 
 <div class="content">
-    <div class="grid-box">
-        <input type="text" maxlength="10" py-input="drawit" id="expression" name="expression" value="A">
+    <div class="tab-wrap">
+        <input type="radio" id="allglyphs" name="tabGroup" class="tab" checked />
+        <label for="allglyphs">Glyphs</label>
+        <div class="tab__content">
+            <div id="out_allglyphs" py-click="glyph_click" class="pyout"></div>
+        </div>
+
+        <input type="radio" id="oneglyph" name="tabGroup" class="tab" />
+        <label for="oneglyph">Glyph Info</label>
+        <div class="tab__content">
+            <div>
+                <label for="character">Character:</label>
+                <input type="text" maxlength="2" id="character" name="character" value="A" py-input="update_glyph_char">
+                <label for="number" style="margin-left: 20px;">Glyph ID:</label>
+                <input type="number" id="glyphid" name="glyphid" min="0" value="36" py-input="update_glyph_id">
+            </div>
+            <div class="glyphgrid">
+                <div id="out_oneglyph">One Glyph Here</div>
+                <div id="out_glyphinfo" class="datatable">Glyph Info Table</div>
+            </div>
+        </div>
+
+        <input type="radio" id="gsub" name="tabGroup" class="tab" />
+        <label for="gsub">Glyph Substitutions</label>
+        <div class="tab__content">
+            <label for="feature">GSUB Feature:</label>
+            <select name="feature" id="feature", py-click="update_gsub">
+                <option></option>
+            </select> 
+            <div id="out_gsub" class="pyout"></div>
+        </div>
+
+        <input type="radio" id="fontinfo" name="tabGroup" class="tab" />
+        <label for="fontinfo">Font Info</label>
+        <div class="tab__content">
+            <div id="out_fontinfo" class="datatable">Font Info</div>
+        </div>
     </div>
 
-<br><br>
-<div class="outputgrid">
-    <div id="textout"></div>
-    <div id="description"></div>
 </div>
-
-<br><br>    
-<div>
-    <div class="inputgrid">
-        <div class="grid-box">
-            <button type="button" py-click="file_save" id="savebutton">Download SVG</button>
-        </div>
-        <div class="grid-box">
-            <label for="fileinput">Font File</label>
-            <input type="file" id="fileinput" accept=".ttf, .otf" py-change="load_font"/>
-        </div>
-    </div>
-</div>
-
-</div>
-<br><br>    
 <footer>
-   <p>Made with <a href="https://ziafont.readthedocs.io">Ziafont</a> and <a href="https://pyscript.net/">PyScript</a></p>
+    <p>Made with <a href="https://ziafont.readthedocs.io">Ziafont</a> and <a href="https://pyscript.net/">PyScript</a></p>
 </footer>
 
 <py-script>
-import asyncio
-from pyscript import document, display
-from js import console, window, Uint8Array, File, URL
-from io import BytesIO
+    import asyncio
+    from pyscript import document, display
+    from js import console, window, Uint8Array
+    from io import BytesIO
+    
+    import ziafont
 
-import ziafont
+    class MyFont:
+        ''' Class for accessing loaded font globally '''
+        def __init__(self):
+            self.font = ziafont.Font()
+    
+        def change_font(self, fname):
+            self.font = ziafont.Font(fname)
+    
+    
+    myfont = MyFont()
 
+    async def load_font(event=None):
+        ''' Load the font file '''
+        files = event.target.files.to_py()
+        file = files.item(0)
+        if file is None: return
+        filename = file.name
+        content = Uint8Array.new(await file.arrayBuffer())
+        buf = BytesIO(bytearray(content))
+        with open(filename, 'wb') as f:
+            f.write(buf.getbuffer())
+    
+        myfont.change_font(filename)
+        console.log(f'Loaded font {filename}')
+        drawfont()
+        fill_gsub()
 
-class MyFont:
-    ''' Class for accessing loaded font globally '''
-    def __init__(self):
-        self.font = ziafont.Font()
+    def drawfont(*args):
+        ''' Draw all glyphs and font info '''
+        display(ziafont.inspect.ShowGlyphs(
+            myfont.font, size=28, columns=16,
+            ),
+            target='out_allglyphs', append=False)
+        display(ziafont.inspect.DescribeFont(myfont.font), target='out_fontinfo', append=False)
 
-    def change_font(self, fname):
-        self.font = ziafont.Font(fname)
+    def drawglyph(*args):
+        ''' Draw the glyph '''
+        glyph = myfont.font.glyph('A')
+        display(glyph.test(), target='out_oneglyph', append=False)
+        display(ziafont.inspect.DescribeGlyph(glyph), target='out_glyphinfo', append=False)
+    
+    def update_glyph_char(event=None):
+        ''' Update the glyph by character '''
+        c = document.querySelector('#character').value[-1]
+        document.querySelector('#character').value = c
+        glyph = myfont.font.glyph(c)
+        display(glyph.test(), target='out_oneglyph', append=False)
+        display(ziafont.inspect.DescribeGlyph(glyph), target='out_glyphinfo', append=False)
+        document.querySelector('#glyphid').value = glyph.index
 
+    def update_glyph_id(event=None):
+        ''' Update the glyph by ID '''
+        i = int(document.querySelector('#glyphid').value)
+        glyph = myfont.font.glyph_fromid(i)
+        display(glyph.test(), target='out_oneglyph', append=False)
+        display(ziafont.inspect.DescribeGlyph(glyph), target='out_glyphinfo', append=False)
+        if glyph.char:
+            ch = list(glyph.char)[0]
+        else:
+            ch = ''
+        document.querySelector('#character').value = ch
 
-myfont = MyFont()
+    def glyph_click(event=None):
+        ''' A glyph was clicked '''
+        target = event.target
+        while target.tagName != 'DIV':  # Traverse up to find the div that was clicked
+            target = target.parentNode
+        
+        gid = target.getAttribute('gid')
+        if gid:
+            #glyph = myfont.font.glyph_fromid(int(gid))
+            #display(glyph.test(), target='out_oneglyph', append=False)
+            #display(ziafont.inspect.DescribeGlyph(glyph), target='out_glyphinfo', append=False)
+            document.querySelector('#glyphid').value = int(gid)
+            update_glyph_id()
+            document.querySelector('#oneglyph').checked = True
 
+    def fill_gsub(*args):
+        ''' Fill GSUB feature dropdown '''
+        sel = document.querySelector('#feature')
+        sel.length = 0  # Remove old options
+        features = list(myfont.font.gsub.features_active().keys())
+        for feat in features:
+            option = document.createElement('option')
+            option.value = feat
+            option.text = feat
+            sel.appendChild(option)
 
-async def load_font(event=None):
-    ''' Load the font file '''
-    files = event.target.files.to_py()
-    file = files.item(0)
-    if file is None: return
-    filename = file.name
-    content = Uint8Array.new(await file.arrayBuffer())
-    buf = BytesIO(bytearray(content))
-    with open(filename, 'wb') as f:
-        f.write(buf.getbuffer())
-
-    myfont.change_font(filename)
-    console.log(f'Loaded font {filename}')
-    drawit()
-
-
-def drawit(*args):
-    ''' Draw the glyph '''
-    expr = document.querySelector("#expression")
-    expr.value = expr.value[-1]
-    if len(expr.value) == 0: return
-    try:
-        glyph = myfont.font.glyph(expr.value)
-        textsvg = glyph.test()
-        desc = glyph.describe()
-    except Exception as e:
-        console.log('Exception: ' + str(e.args))
-    else:
-        display(textsvg, target='textout', append=False)
-        display(desc, target='description', append=False)
-
-
-def file_save(*args):
-    ''' Download the SVG file '''
-    expr = document.querySelector("#expression").value
-    textsvg = myfont.font.glyph(expr[-1]).test().svg()
-
-    stream = BytesIO(textsvg.encode('utf-8'))
-    js_array = Uint8Array.new(len(textsvg))
-    js_array.assign(stream.getbuffer())
-    file = File.new([js_array], "ziafont_glyph.svg", {type: "text/plain"})
-    url = URL.createObjectURL(file)
-
-    hidden_link = document.createElement("a")
-    hidden_link.setAttribute("download", "ziafont_glyph.svg")
-    hidden_link.setAttribute("href", url)
-    hidden_link.click()
-
-drawit()
+    def update_gsub(*args):
+        ''' Update the GSUB table '''
+        feat = document.querySelector('#feature').value
+        display(
+            ziafont.inspect.ShowFeature(
+                feat,
+                myfont.font,
+                size=28
+            ),
+            target='out_gsub',
+            append=False
+        )
+    
+    fill_gsub()
+    drawfont()
+    drawglyph()
     
 </py-script>
+
 </body>
 </html>

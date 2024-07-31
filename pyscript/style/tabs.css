@@ -1,0 +1,60 @@
+
+  .tab-wrap {
+    transition: 0.3s box-shadow ease;
+    max-width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+    list-style: none;
+    margin: 5px 0;
+    justify-content: center;
+}
+
+.tab {
+    appearance: none;
+}
+
+.tab:hover + label {
+    box-shadow: 0 -1px #f7b10e inset;
+    color: #000;
+}
+.tab:checked + label { 
+    box-shadow: 0 -2px 0 #2a819e inset;
+}
+.tab:checked + label + .tab__content {
+    opacity: 1;
+    transition: 0.5s opacity ease-in, 0.8s transform ease;
+    position: relative;
+    top: 0;
+    z-index: 100;
+    text-shadow: 0 0 0;
+}
+
+.tab + label {
+    box-shadow: 0 -1px 0 #ccc inset;
+    border-radius: 6px 6px 0 0;
+    cursor: pointer;
+    display: block;
+    text-decoration: none;
+    color: #888;
+    text-align: center;
+    user-select: none;
+    background-color: #fff;
+    transition: 0.3s background-color ease, 0.3s box-shadow ease;
+    box-sizing: border-box;
+    padding: 0 5px;
+    font-size: medium;
+}
+
+.tab__content {
+    padding: 2em 1em;
+    background-color: transparent;
+    position: absolute;
+    width: 100%;
+    z-index: -1;
+    opacity: 0;
+    left: 0;
+    transform: translateY(-3px);
+    border-radius: 6px;
+    order: 99;
+}
