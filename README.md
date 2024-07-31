@@ -11,7 +11,7 @@
 
 - [Logic Gates](pyscript/logic.html) - Draw logic trees with Schemdraw
 - [Ziamath](pyscript/ziamath.html) - Render LaTeX and MathML math expressions to SVG
-- [Ziafont](pyscript/ziafontstr.html) - Render text to SVG using Open Type fonts
+- [Ziafont](pyscript/ziafont.html) - Inspect TTF/OTF font files and their glyphs
 
 ## Websites
 
