@@ -37,7 +37,7 @@ a:visited {
 }
 
 .content {
-    max-width: 56em;
+    max-width: 64em;
     margin: auto;
     text-align: center;
 }
@@ -101,6 +101,11 @@ textarea {
     border: 1px solid #ced4da;
     border-radius: 4px;
 }
+
+#textentry {
+    width: 60%;
+}
+
 
 input[type=number] {
     width: 100px;
@@ -180,4 +185,14 @@ select {
 }
 #out_gsub tr:nth-of-type(odd) {
     background-color: #f8f8f8;
+}
+
+.checkgrid {
+    display: grid;
+    margin-top: 25px;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-column-gap: 4px;
+    margin-left: 10px;
+    margin-right: 10px;  
+    justify-items: start;
 }

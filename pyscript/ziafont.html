@@ -35,7 +35,22 @@
 
 <div class="content">
     <div class="tab-wrap">
-        <input type="radio" id="allglyphs" name="tabGroup" class="tab" checked />
+        <input type="radio" id="preview" name="tabGroup" class="tab" checked />
+        <label for="preview">Text Preview</label>
+        <div class="tab__content">
+            <div>
+                <label for="textentry">Text:</label>
+                <textarea type="text" name="textentry" id="textentry" py-input="update_text" >If you wish to make an apple pie from scratch,
+you must first invent the universe.
+                    </textarea>
+                <label for="number" style="margin-left: 20px;">Font Size:</label>
+                <input type="number" id="textsize" name="textsize" min="4" value="36" py-input="update_text">
+            </div>
+            <div id="out_text" class="pyout"></div>
+            <div class="checkgrid" id="feature_chks"></div>
+        </div>
+
+        <input type="radio" id="allglyphs" name="tabGroup" class="tab" />
         <label for="allglyphs">Glyphs</label>
         <div class="tab__content">
             <div id="out_allglyphs" py-click="glyph_click" class="pyout"></div>
@@ -112,6 +127,8 @@
         console.log(f'Loaded font {filename}')
         drawfont()
         fill_gsub()
+        fill_features()
+        update_text()
 
     def drawfont(*args):
         ''' Draw all glyphs and font info '''
@@ -167,7 +184,9 @@
         ''' Fill GSUB feature dropdown '''
         sel = document.querySelector('#feature')
         sel.length = 0  # Remove old options
-        features = list(myfont.font.gsub.features_active().keys())
+        if not myfont.font.gsub:
+            return
+        features = list(myfont.font.gsub.features_available().keys())
         for feat in features:
             option = document.createElement('option')
             option.value = feat
@@ -176,6 +195,8 @@
 
     def update_gsub(*args):
         ''' Update the GSUB table '''
+        if not myfont.font.gsub:
+            return
         feat = document.querySelector('#feature').value
         display(
             ziafont.inspect.ShowFeature(
@@ -187,6 +208,49 @@
             append=False
         )
     
+    def update_text(*args):
+        text = document.querySelector('#textentry').value
+        if not text:
+            return
+
+        size = int(document.querySelector('#textsize').value)
+
+        features = document.querySelectorAll('.feature_check')
+        if features:
+            for feat in features:
+                name = feat.name
+                enabled = feat.checked
+                myfont.font.features[name] = enabled
+
+        display(
+            myfont.font.text(text, size=size),
+            target='out_text',
+            append=False
+        )
+
+    def fill_features(*args):
+        parent = document.querySelector('#feature_chks')
+        parent.innerHTML = ''
+        features = myfont.font.features
+        for name, checked in features.items():
+            div = document.createElement('div')
+            chk = document.createElement('input')
+            label = document.createElement('label')
+            label.innerHTML = name
+            chk.setAttribute('type', 'checkbox')
+            if checked:
+                chk.setAttribute('checked', checked)
+            chk.setAttribute('value', name)
+            chk.setAttribute('name', name)
+            chk.setAttribute('class', 'feature_check')
+            chk.setAttribute('py-click', 'update_text')
+            div.appendChild(chk)
+            div.appendChild(label)
+            parent.appendChild(div)
+
+
+    update_text()
+    fill_features()
     fill_gsub()
     drawfont()
     drawglyph()
