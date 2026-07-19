@@ -6,34 +6,11 @@
     <title>Ziamath Latex Rendering Demo</title>
     <link rel="icon" type="image/png" href="favicon.png" />
     <link rel="stylesheet" href="style/style.css" />
-    <link rel="stylesheet" href="https://pyscript.net/releases/2024.7.1/core.css" />
-    <script type="module" src="https://pyscript.net/releases/2024.7.1/core.js"></script>
-    <script type="module">
-        const loading = document.getElementById('loading');
-        addEventListener('py:ready', () => loading.close());
-        loading.showModal();
-    </script>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2026.7.2/core.css" />
+    <script type="module" src="https://pyscript.net/releases/2026.7.2/core.js"></script>
   </head>
 
-  <body>
-    <py-config>
-      packages = ["whl/ziafont-0.10a0-py3-none-any.whl",
-                  "whl/ziamath-0.12a0-py3-none-any.whl",
-                  "latex2mathml"]
-      [[fetch]]
-      files = ["fonts/Asana-Math.ttf",
-               "fonts/Concrete-Math.otf",
-               "fonts/DejaVuMathTeXGyre.ttf",
-               "fonts/Erewhon-Math.otf",
-               "fonts/FiraMath-Regular.otf",
-               "fonts/Garamond-Math.otf",
-               "fonts/LeteSansMath.otf",
-               "fonts/LibertinusMath-Regular.otf"]
-    </py-config>
-<dialog id="loading">
-  <h2>Loading...</h2>
-</dialog>
-    
+<body>
 <div class="top">
   <h1>Ziamath LaTeX Rendering Demo</h1>
   <h3>Enter a LaTeX math expression</h3>
@@ -49,10 +26,10 @@
     </div>
     <div class="grid-box"></div>
     <div class="grid-box">
-      <input type="text" py-input="drawit" id="expression" name="expression" value="\sqrt{a^2 + b^2}">
+      <input type="text" id="expression" name="expression" value="\sqrt{a^2 + b^2}">
     </div>
     <div class="grid-box">
-      <select id="mathfont" name="mathfont" py-input="drawit">
+      <select id="mathfont" name="mathfont">
         <option value="stix2">Stix2</option>
         <option value="asana">Asana-Math</option>
         <option value="concrete">Concrete-Math</option>
@@ -65,16 +42,16 @@
       </select>          
     </div>
     <div class="grid-box">
-          <input type="checkbox" name="inline" id="inline" type="checkbox" py-click="drawit">
+          <input type="checkbox" name="inline" id="inline" type="checkbox">
           <label>Inline</label>
     </div>
 </div>
-    
       <br><br>
+      <div id="loading"><h2>Loading...</h2></div>
       <div id="mathout"></div>
       <br><br>    
    <div>
-      <button type="button" py-click="file_save" id="savebutton">Download SVG</button>
+      <button type="button" id="savebutton">Download SVG</button>
    </div>
       </div>
       <br><br>    
@@ -83,56 +60,6 @@
        <p>Made with <a href="https://ziamath.readthedocs.io">Ziamath</a> and <a href="https://pyscript.net/">PyScript</a></p>
 </footer>
 
-<py-script>
-import asyncio
-from pyscript import document, display
-from js import console, window, Uint8Array, File, URL
-from io import BytesIO
-
-import ziamath
-
-def getfont():
-    name = document.querySelector("#mathfont").value
-    return {'asana': 'fonts/Asana-Math.ttf',
-            'concrete': 'fonts/Concrete-Math.otf',
-            'dejavu': 'fonts/DejaVuMathTeXGyre.ttf',
-            'erewhon': 'fonts/Erewhon-Math.otf',
-            'fira': 'fonts/FiraMath-Regular.otf',
-            'garamond': 'fonts/Garamond-Math.otf',
-            'lete': 'fonts/LeteSansMath.otf',
-            'liber': 'fonts/LibertinusMath-Regular.otf'
-            }.get(name, None)  # stix is default/None
-
-
-def drawit(*args):
-    expr = document.querySelector("#expression").value
-    inline = document.querySelector("#inline").checked
-    try:
-        mathsvg = ziamath.Latex(expr, font=getfont(), inline=inline)
-    except Exception as e:
-        console.log('Math Exception: ' + str(e.args))
-    else:
-        display(mathsvg, target='mathout', append=False)
-
-
-async def file_save(*args):
-    expr = document.querySelector("#expression").value
-    inline = document.querySelector("#inline").checked
-    mathsvg = ziamath.Latex(expr, font=getfont(), inline=inline).svg()
-
-    stream = BytesIO(mathsvg.encode('utf-8'))
-    js_array = Uint8Array.new(len(mathsvg))
-    js_array.assign(stream.getbuffer())
-    file = File.new([js_array], "ziamath.svg", {type: "text/plain"})
-    url = URL.createObjectURL(file)
-
-    hidden_link = document.createElement("a")
-    hidden_link.setAttribute("download", "ziamath.svg")
-    hidden_link.setAttribute("href", url)
-    hidden_link.click()
-
-drawit()
-    
-</py-script>
+<script type="py" src="src/zmath.py" config='./zmath_pyscript.json'></script>
 </body>
 </html>

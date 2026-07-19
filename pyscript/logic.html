@@ -6,25 +6,10 @@
     <title>Logic Circuits</title>
     <link rel="icon" type="image/png" href="favicon.png" />
     <link rel="stylesheet" href="style/style.css" />
-    <link rel="stylesheet" href="https://pyscript.net/releases/2024.7.1/core.css" />
-    <script type="module" src="https://pyscript.net/releases/2024.7.1/core.js"></script>
-    <script type="module">
-      const loading = document.getElementById('loading');
-      addEventListener('py:ready', () => loading.close());
-      loading.showModal();
-  </script>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2026.7.2/core.css" />
+    <script type="module" src="https://pyscript.net/releases/2026.7.2/core.js"></script>
 </head>
-  <body>
-    <py-config>
-      packages = ["whl/schemdraw-0.19-py3-none-any.whl",
-                  "whl/ziamath-0.12a0-py3-none-any.whl",
-                  "whl/ziafont-0.10a0-py3-none-any.whl",
-                  "pyparsing"
-                  ]
-    </py-config>
-<dialog id="loading">
-  <h2>Loading...</h2>
-</dialog>
+<body>
 <div class="top">
   <h1>Logic Gates by Schemdraw</h1>
   <h3>Enter a logic expression</h3>
@@ -39,21 +24,22 @@
         Gate Height
     </div>
     <div class="grid-box">
-      <input type="text" py-input="drawit" id="expression" name="expression" value="a or b"> = 
-      <input type="text" py-input="drawit" id="outlabel" name="outlabel" value="Q">
+      <input type="text" id="expression" name="expression" value="a or b"> =
+      <input type="text" id="outlabel" name="outlabel" value="Q">
     </div>
     <div class="grid-box">
-      <input type="number" py-input="drawit" name="height" id="height"
+      <input type="number" name="height" id="height"
             min=".25" max="4" step=".25" value=".75">
     </div>
 </div>
 <br><br>
 
+<div id="loading"><h2>Loading...</h2></div>
 <div id="schematic"></div>
 <br><br>
 
 <div>
-    <button type="button" py-click="file_save" id="savebutton">Download Image</button>
+    <button type="button" id="savebutton">Download Image</button>
 </div>
 </div>
   <br><br>    
@@ -61,43 +47,11 @@
    <p>Made with <a href="https://schemdraw.readthedocs.io">Schemdraw</a> and <a href="https://pyscript.net/">PyScript</a></p>
 </footer>
 
-<py-script>
-import asyncio
-from pyscript import document, display
-from js import console, window, Uint8Array, File, URL
-from io import BytesIO
+<script type="py", src="src/logic.py" config='{"packages": ["whl/schemdraw-0.24a0-py3-none-any.whl",
+ "whl/ziamath-0.13-py3-none-any.whl",
+ "whl/ziafont-0.11-py3-none-any.whl",
+ "pyparsing"
+]}'></script>
 
-from schemdraw.parsing import logicparse
-
-
-def drawit(*args):
-    expr = document.querySelector("#expression").value
-    outlabel = document.querySelector("#outlabel").value
-    gateH = float(document.querySelector("#height").value)
-    d = logicparse(expr, outlabel=outlabel, gateH=gateH)
-    display(d, target='schematic', append=False)
-
-
-async def file_save(*args):
-    expr = document.querySelector("#expression").value
-    outlabel = document.querySelector("#outlabel").value
-    gateH = float(document.querySelector("#height").value)
-    img = logicparse(expr, outlabel=outlabel, gateH=gateH).get_imagedata()
-
-    stream = BytesIO(img)
-    js_array = Uint8Array.new(len(img))
-    js_array.assign(stream.getbuffer())
-    file = File.new([js_array], "schemdraw_logic.svg", {type: "text/plain"})
-    url = URL.createObjectURL(file)
-
-    hidden_link = document.createElement("a")
-    hidden_link.setAttribute("download", "schemdraw_logic.svg")
-    hidden_link.setAttribute("href", url)
-    hidden_link.click()
-
-
-drawit()
-    
-</py-script>
 </body>
 </html>

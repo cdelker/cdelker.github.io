@@ -30,8 +30,8 @@ a:visited {
   max-width: 100%;
   text-align: center;
   background: #e3e3eb;
-  padding-top: 2em;
-  padding-bottom: 1em;
+  padding-top: 1px;
+  padding-bottom: 1px;
   margin-bottom: 1em;
 }
 
@@ -109,6 +109,7 @@ button {
     color: #fff;
     background-color: rgb(88, 101, 242);
     transition: background-color .17s ease,color .17s ease;
+    margin-right: 2em;
 }
 button:hover {
     background-color: rgb(71, 82, 196);

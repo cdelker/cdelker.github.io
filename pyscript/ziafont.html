@@ -7,29 +7,16 @@
     <link rel="icon" type="image/png" href="favicon.png" />
     <link rel="stylesheet" href="style/zfstyle.css" />
     <link rel="stylesheet" href="style/tabs.css" />
-    <link rel="stylesheet" href="https://pyscript.net/releases/2024.7.1/core.css" />
-    <script type="module" src="https://pyscript.net/releases/2024.7.1/core.js"></script>
-    <script type="module">
-        const loading = document.getElementById('loading');
-        addEventListener('py:ready', () => loading.close());
-        loading.showModal();
-    </script>
-    </head>
-
+    <link rel="stylesheet" href="https://pyscript.net/releases/2026.7.2/core.css" />
+    <script type="module" src="https://pyscript.net/releases/2026.7.2/core.js"></script>
+</head>
 <body>
-<py-config>
-    packages = ["whl/ziafont-0.11a0-py3-none-any.whl"]
-</py-config>
-<dialog id="loading">
-    <h2>Loading...</h2>
-</dialog>
-
-
 <div class="top">
   <h1>Ziafont Font Inspection Demo</h1>
+    <div id="loading"><h2>Loading...</h2></div>
   <div class="grid-box">
     <label for="fileinput">Font File</label>
-    <input type="file" id="fileinput" accept=".ttf, .otf" py-change="load_font"/>
+    <input type="file" id="fileinput" accept=".ttf, .otf"/>
   </div>
 </div>
 
@@ -40,11 +27,11 @@
         <div class="tab__content">
             <div>
                 <label for="textentry">Text:</label>
-                <textarea type="text" name="textentry" id="textentry" py-input="update_text" >If you wish to make an apple pie from scratch,
+                <textarea type="text" name="textentry" id="textentry">If you wish to make an apple pie from scratch,
 you must first invent the universe.
                     </textarea>
                 <label for="number" style="margin-left: 20px;">Font Size:</label>
-                <input type="number" id="textsize" name="textsize" min="4" value="36" py-input="update_text">
+                <input type="number" id="textsize" name="textsize" min="4" value="36">
             </div>
             <div id="out_text" class="pyout"></div>
             <div class="checkgrid" id="feature_chks"></div>
@@ -53,7 +40,7 @@ you must first invent the universe.
         <input type="radio" id="allglyphs" name="tabGroup" class="tab" />
         <label for="allglyphs">Glyphs</label>
         <div class="tab__content">
-            <div id="out_allglyphs" py-click="glyph_click" class="pyout"></div>
+            <div id="out_allglyphs" class="pyout"></div>
         </div>
 
         <input type="radio" id="oneglyph" name="tabGroup" class="tab" />
@@ -61,9 +48,9 @@ you must first invent the universe.
         <div class="tab__content">
             <div>
                 <label for="character">Character:</label>
-                <input type="text" maxlength="2" id="character" name="character" value="A" py-input="update_glyph_char">
+                <input type="text" maxlength="2" id="character" name="character" value="A">
                 <label for="number" style="margin-left: 20px;">Glyph ID:</label>
-                <input type="number" id="glyphid" name="glyphid" min="0" value="36" py-input="update_glyph_id">
+                <input type="number" id="glyphid" name="glyphid" min="0" value="36">
             </div>
             <div class="glyphgrid">
                 <div id="out_oneglyph">One Glyph Here</div>
@@ -75,7 +62,7 @@ you must first invent the universe.
         <label for="gsub">Glyph Substitutions</label>
         <div class="tab__content">
             <label for="feature">GSUB Feature:</label>
-            <select name="feature" id="feature", py-click="update_gsub">
+            <select name="feature" id="feature">
                 <option></option>
             </select> 
             <div id="out_gsub" class="pyout"></div>
@@ -93,169 +80,7 @@ you must first invent the universe.
     <p>Made with <a href="https://ziafont.readthedocs.io">Ziafont</a> and <a href="https://pyscript.net/">PyScript</a></p>
 </footer>
 
-<py-script>
-    import asyncio
-    from pyscript import document, display
-    from js import console, window, Uint8Array
-    from io import BytesIO
-    
-    import ziafont
-
-    class MyFont:
-        ''' Class for accessing loaded font globally '''
-        def __init__(self):
-            self.font = ziafont.Font()
-    
-        def change_font(self, fname):
-            self.font = ziafont.Font(fname)
-    
-    
-    myfont = MyFont()
-
-    async def load_font(event=None):
-        ''' Load the font file '''
-        files = event.target.files.to_py()
-        file = files.item(0)
-        if file is None: return
-        filename = file.name
-        content = Uint8Array.new(await file.arrayBuffer())
-        buf = BytesIO(bytearray(content))
-        with open(filename, 'wb') as f:
-            f.write(buf.getbuffer())
-    
-        myfont.change_font(filename)
-        console.log(f'Loaded font {filename}')
-        drawfont()
-        fill_gsub()
-        fill_features()
-        update_text()
-
-    def drawfont(*args):
-        ''' Draw all glyphs and font info '''
-        display(ziafont.inspect.ShowGlyphs(
-            myfont.font, size=28, columns=16,
-            ),
-            target='out_allglyphs', append=False)
-        display(ziafont.inspect.DescribeFont(myfont.font), target='out_fontinfo', append=False)
-
-    def drawglyph(*args):
-        ''' Draw the glyph '''
-        glyph = myfont.font.glyph('A')
-        display(glyph.test(), target='out_oneglyph', append=False)
-        display(ziafont.inspect.DescribeGlyph(glyph), target='out_glyphinfo', append=False)
-    
-    def update_glyph_char(event=None):
-        ''' Update the glyph by character '''
-        c = document.querySelector('#character').value[-1]
-        document.querySelector('#character').value = c
-        glyph = myfont.font.glyph(c)
-        display(glyph.test(), target='out_oneglyph', append=False)
-        display(ziafont.inspect.DescribeGlyph(glyph), target='out_glyphinfo', append=False)
-        document.querySelector('#glyphid').value = glyph.index
-
-    def update_glyph_id(event=None):
-        ''' Update the glyph by ID '''
-        i = int(document.querySelector('#glyphid').value)
-        glyph = myfont.font.glyph_fromid(i)
-        display(glyph.test(), target='out_oneglyph', append=False)
-        display(ziafont.inspect.DescribeGlyph(glyph), target='out_glyphinfo', append=False)
-        if glyph.char:
-            ch = list(glyph.char)[0]
-        else:
-            ch = ''
-        document.querySelector('#character').value = ch
-
-    def glyph_click(event=None):
-        ''' A glyph was clicked '''
-        target = event.target
-        while target.tagName != 'DIV':  # Traverse up to find the div that was clicked
-            target = target.parentNode
-        
-        gid = target.getAttribute('gid')
-        if gid:
-            #glyph = myfont.font.glyph_fromid(int(gid))
-            #display(glyph.test(), target='out_oneglyph', append=False)
-            #display(ziafont.inspect.DescribeGlyph(glyph), target='out_glyphinfo', append=False)
-            document.querySelector('#glyphid').value = int(gid)
-            update_glyph_id()
-            document.querySelector('#oneglyph').checked = True
-
-    def fill_gsub(*args):
-        ''' Fill GSUB feature dropdown '''
-        sel = document.querySelector('#feature')
-        sel.length = 0  # Remove old options
-        if not myfont.font.gsub:
-            return
-        features = list(myfont.font.gsub.features_available().keys())
-        for feat in features:
-            option = document.createElement('option')
-            option.value = feat
-            option.text = feat
-            sel.appendChild(option)
-
-    def update_gsub(*args):
-        ''' Update the GSUB table '''
-        if not myfont.font.gsub:
-            return
-        feat = document.querySelector('#feature').value
-        display(
-            ziafont.inspect.ShowFeature(
-                feat,
-                myfont.font,
-                size=28
-            ),
-            target='out_gsub',
-            append=False
-        )
-    
-    def update_text(*args):
-        text = document.querySelector('#textentry').value
-        if not text:
-            return
-
-        size = int(document.querySelector('#textsize').value)
-
-        features = document.querySelectorAll('.feature_check')
-        if features:
-            for feat in features:
-                name = feat.name
-                enabled = feat.checked
-                myfont.font.features[name] = enabled
-
-        display(
-            myfont.font.text(text, size=size),
-            target='out_text',
-            append=False
-        )
-
-    def fill_features(*args):
-        parent = document.querySelector('#feature_chks')
-        parent.innerHTML = ''
-        features = myfont.font.features
-        for name, checked in features.items():
-            div = document.createElement('div')
-            chk = document.createElement('input')
-            label = document.createElement('label')
-            label.innerHTML = name
-            chk.setAttribute('type', 'checkbox')
-            if checked:
-                chk.setAttribute('checked', checked)
-            chk.setAttribute('value', name)
-            chk.setAttribute('name', name)
-            chk.setAttribute('class', 'feature_check')
-            chk.setAttribute('py-click', 'update_text')
-            div.appendChild(chk)
-            div.appendChild(label)
-            parent.appendChild(div)
-
-
-    update_text()
-    fill_features()
-    fill_gsub()
-    drawfont()
-    drawglyph()
-    
-</py-script>
+<script type="py" src="src/zfont.py" config='{"packages": ["whl/ziafont-0.11-py3-none-any.whl"]}'></script>
 
 </body>
 </html>

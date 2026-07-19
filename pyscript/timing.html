@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Timing Diagrams | Schemdraw</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="style/style.css" />
+    <link rel="stylesheet" href="https://pyscript.net/releases/2026.7.2/core.css" />
+    <script type="module" src="https://pyscript.net/releases/2026.7.2/core.js"></script>
+ <!--   <script type="module">
+      const loading = document.getElementById('loading');
+      addEventListener('py:ready', () => loading.close());
+      loading.showModal();
+      -->
+  </script>
+</head>
+  <body>
+<div class="top">
+  <h1>Timing Diagrams by Schemdraw</h1>
+  <p>Based on the <a href="https://wavedrom.com">WaveDROM</a> format, with a few added extensions, re-implemented in Python as part of the Schemdraw library. <a href="https://schemdraw.readthedocs.io/en/stable/elements/timing.html">Documentation</a></p>
+</div>
+
+<div class="content">
+<div class="logicgrid">
+    <div class="grid-box">
+        <textarea id="timinginput" name="timinginput" rows="12" cols="60">
+&#123; signal: &#91; &#123; name: &quot;Alfa&quot;, wave: &quot;01.zx=ud.23.456789&quot; &#125; &#93; &#125;
+        </textarea>
+    </div>
+
+</div>
+<div>
+    <button type="button" id="savebutton">Download Image</button>
+    <button id="randbutton">Random</button>
+</div>
+<br><br>
+<div id="loading">
+  <h2>Loading...</h2>
+</div>
+<div id="output"></div>
+<br><br>
+
+</div>
+  <br><br>
+<footer>
+   <p>Made with <a href="https://schemdraw.readthedocs.io">Schemdraw</a> and <a href="https://pyscript.net/">PyScript</a></p>
+</footer>
+
+<script type="py" src="src/timing.py" config='{"packages": ["whl/schemdraw-0.24a0-py3-none-any.whl"]}'></script>
+</body>
+</html>

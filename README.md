@@ -9,6 +9,7 @@
 
 ## PyScript Demos
 
+- [Timing Diagrams](pyscript/timing.html) - Draw digital timing diagrams with Schemdraw
 - [Logic Gates](pyscript/logic.html) - Draw logic trees with Schemdraw
 - [Ziamath](pyscript/ziamath.html) - Render LaTeX and MathML math expressions to SVG
 - [Ziafont](pyscript/ziafont.html) - Inspect TTF/OTF font files and their glyphs
